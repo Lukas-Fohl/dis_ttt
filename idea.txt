@@ -1,0 +1,20 @@
+!new match 
+	later:
+	-->add match to list and print Match-ID
+	-->print message to aks fpr players 
+		-->play has to send message("!join:Match-ID")
+	-->Start Game 
+		-->Pint order 
+		-->Print board 
+	now:
+	-->print message to aks fpr players 
+		-->play has to send message("!join")
+	-->Start Game 
+		-->Pint order (Player 1 = Player-1 && Player 2 = Plyer-2)
+		repeat:
+			-->Print board 
+		 	-->wait for respont from Player --> change board, look for win 
+!score
+	get score from txt --> print won matches 
+!stop
+	-->Kill match

@@ -88,9 +88,9 @@ async def look_for_win(message_in):
             elif board[x*y] == 4:
                 have_to_win_p2 = have_to_win_p2 + 1
         if have_to_win_p1 == 3:
-            win(message_in,0)
+            await win(message_in,0)
         elif have_to_win_p2 == 3:
-            win(message_in,1)
+            await win(message_in,1)
         have_to_win_p1 = 0
         have_to_win_p2 = 0
     # vertical
@@ -101,12 +101,28 @@ async def look_for_win(message_in):
             elif board[x+y*3-3] == 4:
                 have_to_win_p1 = have_to_win_p1 + 1
             if have_to_win_p1 == 3:
-                win(message_in,0)
+                await win(message_in,0)
             elif have_to_win_p2 == 3:
-                win(message_in,1)
+                await win(message_in,1)
         have_to_win_p1 = 0
         have_to_win_p2 = 0
-    # other (yeah i know the word, do you?) 
+    # other (yeah i know the word, do you?)  (Top left -> bottom right)
+    for x in range(3):
+        if board[x*x] == 8:
+            have_to_win_p1 = have_to_win_p1 + 1
+        elif board[x*x] == 4:
+            have_to_win_p1 = have_to_win_p1 + 1
+        if have_to_win_p1 == 3:
+            await win(message_in,0)
+        elif have_to_win_p2 == 3:
+            await win(message_in,1)
+        have_to_win_p1 = 0
+        have_to_win_p2 = 0
+    # other (yeah i know the word, do you?)  (Top right -> bottom left)
+    if board[2] == 8 and board[4] == 8 and board[6] == 8:
+        await win(message_in,0)
+    elif board[2] == 4 and board[4] == 4 and board[6] == 4:
+        await win(message_in,1)
     return
 
 async def win(message_in,win):

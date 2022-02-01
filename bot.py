@@ -51,7 +51,6 @@ async def on_message(message):
                 player[1] = username
                 print(username)
 
-
             if player[0] != "ab" and player[1] != "cd":
                 match_is_playing = True
                 await message.channel.send("1st play is " + player[0])

@@ -4,7 +4,7 @@ import discord
 from re import search
 import numpy as np
 
-TOKEN = ''
+TOKEN = 'QmQ4XCpkPnOEthIQmDBDyqk7FSDdZGf3'
 
 client = discord.Client()
 global new_match

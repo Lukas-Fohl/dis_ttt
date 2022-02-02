@@ -1,9 +1,11 @@
+from asyncio.windows_events import NULL
+from email import message, message_from_string
 from operator import truediv
 from pickle import FALSE, TRUE
 import discord
 from re import search
 
-TOKEN = ''
+TOKEN = 'ODkzNTY4OTQ4MDgyMjAwNjA4.YVdW7g.CAmUPW_I32s8-F7rZ1PC9ztZ2w4'
 client = discord.Client()
 
 global new_match
@@ -15,6 +17,7 @@ board = [0,0,0,
          0,0,0,
          0,0,0]
 player_now =""
+
 
 @client.event
 async def on_ready():
@@ -38,11 +41,11 @@ async def on_message(message):
         global new_match
         global player_now
         print(match_is_playing)
-        if user_message == "!new game" and new_match == False and match_is_playing == False:
-            await message.channel.send(f'new match ist starting (join with !join)')
+        if user_message == "new game" and new_match == False and match_is_playing == False:
+            await message.channel.send(f'new match ist starting (join with join)')
             new_match = True
             return
-        elif user_message =="!join" and new_match == True and match_is_playing == False:
+        elif user_message =="join" and new_match == True and match_is_playing == False:
             if player[0] == "ab":
                 player[0] = username
                 await message.channel.send(f'{username} joined')
@@ -54,39 +57,31 @@ async def on_message(message):
 
             if player[0] != "ab" and player[1] != "cd":
                 match_is_playing = True
-                await message.channel.send("1st player is " + player[0])
+                await message.channel.send("1st player is " + player[0] + "(you place with place <Int between 0 and 8>)")
                 player_now = player[0]
                 await print_board(message)
             return
-        elif search("!place",user_message) and match_is_playing == True and match_is_playing == True:
+        elif search("place",user_message) and match_is_playing == True and match_is_playing == True:
             if username == player[0] and player_now == player[0]:
-                print(int(user_message[7]))
-                if board[int(user_message[7])] == 0:
-                    board[int(user_message[7])] = 8
+                print(int(user_message[6]))
+                if board[int(user_message[6])] == 0:
+                    board[int(user_message[6])] = 8
                 player_now = player[1]
                 await print_board(message)
                 await look_for_win(message) 
             elif username == player[1] and player_now == player[1]:
-                if board[int(user_message[7])] == 0:
-                    board[int(user_message[7])] = 4
+                if board[int(user_message[6])] == 0:
+                    board[int(user_message[6])] = 4
                 player_now = player[0]
                 await print_board(message)
                 await look_for_win(message)
-        elif user_message == "!cancel":
+        elif user_message == "cancel":
             await cancel(message)
+        elif user_message == "config":
+            print()
+        elif user_message == "help":
+            await message.channel.send("-start game\t-makes new game \n-join\t\t\t\t -you join an open game\n-place\t\t\t  -places your point abt the a point")
 
-async def print_board(message_in):    
-    global print_board
-    print_board = board
-    for x in range(len(board)):
-        if board[x] == 8:
-            print_board[x] = ":x:"
-        elif board[x] == 4:
-            print_board[x] = ":o:"
-        else:
-            print_board[x] = ":white_square_button:"
-    await message_in.channel.send(f"{print_board[0]}|{print_board[1]}|{print_board[2]}\n{print_board[3]}|{print_board[4]}|{print_board[5]}\n{print_board[6]}|{print_board[7]}|{print_board[8]}")
-    return
 
 async def look_for_win(message_in):
     #horizontal
@@ -150,6 +145,22 @@ async def cancel(message_in):
     player_now = ""
     new_match = False
     match_is_playing = False
+    return
+
+async def print_board(new_message):    
+    global print_string
+    print_string = "" 
+    for x in range(len(board)):
+        if x%3==0:
+            print_string += "\n"
+        if board[x] == 8:
+            print_string += ":x:"
+        elif board[x] == 4:
+            print_string += ":o:"
+        else:
+            print_string += ":white_square_button:"
+    
+    await new_message.channel.send(f"{print_string}")
     return
 
 client.run(TOKEN)

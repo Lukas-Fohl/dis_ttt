@@ -5,7 +5,7 @@ from pickle import FALSE, TRUE
 import discord
 from re import search
 
-TOKEN = 'ODkzNTY4OTQ4MDgyMjAwNjA4.YVdW7g.XIadGrSzN_CS9i9nGrC3NZvxk2E'
+TOKEN = ''
 client = discord.Client()
 
 global new_match

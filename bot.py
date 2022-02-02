@@ -4,7 +4,7 @@ import discord
 from re import search
 import numpy as np
 
-TOKEN = 'QmQ4XCpkPnOEthIQmDBDyqk7FSDdZGf3'
+TOKEN = ''
 
 client = discord.Client()
 global new_match
@@ -15,7 +15,7 @@ global board
 board = [0,0,0,
          0,0,0,
          0,0,0]
-player_now ="";
+player_now =""
 
 @client.event
 async def on_ready():
@@ -39,11 +39,11 @@ async def on_message(message):
         global new_match
         global player_now
         print(match_is_playing)
-        if user_message == "!new game":
+        if user_message == "!new game" and new_match == False and match_is_playing == False:
             await message.channel.send(f'new match ist starting (join with !join)')
             new_match = True
             return
-        elif user_message =="!join" and new_match == True:
+        elif user_message =="!join" and new_match == True and match_is_playing == False:
             if player[0] == "ab":
                 player[0] = username
                 print(username)
@@ -57,7 +57,7 @@ async def on_message(message):
                 player_now = player[0]
                 await print_board(message)
             return
-        elif search("!place",user_message) and match_is_playing == True:
+        elif search("!place",user_message) and match_is_playing == True and match_is_playing == True:
             if username == player[0] and player_now == player[0]:
                 print(int(user_message[7]))
                 if board[int(user_message[7])] == 0:
@@ -73,6 +73,9 @@ async def on_message(message):
             cancel(message)
 
 async def print_board(message_in):
+    emote_1 = null
+    emote_2 = null
+    for x in range(len(board))
     await message_in.channel.send(f"{board[0]}|{board[1]}|{board[2]}\n{board[3]}|{board[4]}|{board[5]}\n{board[6]}|{board[7]}|{board[8]}")
     return
 
@@ -106,6 +109,7 @@ async def look_for_win(message_in):
         have_to_win_p1 = 0
         have_to_win_p2 = 0
     # other (yeah i know the word, do you?)  (Top left -> bottom right)
+    #dont
     for x in range(3):
         if board[x*x] == 8:
             have_to_win_p1 = have_to_win_p1 + 1
@@ -122,10 +126,16 @@ async def look_for_win(message_in):
         await win(message_in,0)
     elif board[2] == 4 and board[4] == 4 and board[6] == 4:
         await win(message_in,1)
+    # other (yeah i know the word, do you?)  (Top left -> bottom right)
+    if board[0] == 8 and board[4] == 8 and board[8] == 8:
+        await win(message_in,0)
+    elif board[0] == 4 and board[4] == 4 and board[8] == 4:
+        await win(message_in,1)
     return
 
 async def win(message_in,win):
     await message_in.channel.send(f"{player[win]} won")
+    await cancel(message_in)
     return
 
 async def cancel(message_in):
@@ -134,7 +144,7 @@ async def cancel(message_in):
     player[1] = ""
     for x in range(len(board)):
         board[x] = 0
-    player_now = "";
+    player_now = ""
     new_match = False
     match_is_playing = False
     return

@@ -79,33 +79,42 @@ async def on_message(message):
         elif user_message == "cancel":
             await cancel(message)
         elif user_message == "user":
-            await print_user(message) 
+            await print_user(message, username) 
         elif user_message == "help":
             await message.channel.send("-start game\t-makes new game \n-join\t\t\t\t -you join an open game\n-place\t\t\t  -places your point at the a point")
 
 
-async def print_user(message_in):
+async def print_user(message_in, username):
+    global won
     won = 0
+    global lost
     lost = 0
-    tie = 0
-    # get file path
+    global draw
+    draw = 0
     path = os.path.realpath(__file__)
-    #read data from file 
-    #search for name 
-    #save values  
-
-    await message_in.channel.send("macthes won:{} matches lost {} matches ended in a tie{}")
+    file = open(path, 'r')
+    lines = file.read.splite('\n')
+    for x in range(len(lines)):
+        if lines[x].split('#')[0] == username:
+            won = lines[x].split('#')[1]
+            lost = lines[x].split('#')[1]
+            draw = lines[x].split('#')[1] 
+    file.close()
+    await message_in.channel.send("macthes won:{won} matches lost {lost} matches ended in a draw{draw}")
     return
 
 async def add_score(messsage_in, winner):
     if winner == 0:
         print()
+        #save file --> search for player --> add score --> wirte file 
         #add player to list or increas score
     elif winner == 1:
         print()
+        #save file --> search for player --> add score --> wirte file 
         #add player to list or increas score
     else:
         print()
+        #save file --> search for player --> add score --> wirte file 
         #add both players to list or increas score
     return
 
@@ -152,7 +161,7 @@ async def look_for_win(message_in):
     elif board[0] == 4 and board[4] == 4 and board[8] == 4:
         print()
         await win(message_in,1)
-    #look for tie
+    #look for draw / full board
     placed = 0
     for x in range(len(board)):
         if board[x] != 0:

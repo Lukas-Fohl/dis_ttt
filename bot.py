@@ -3,6 +3,7 @@ from email import message, message_from_string
 from operator import truediv
 from pickle import FALSE, TRUE
 import discord
+import os
 from re import search
 
 TOKEN = ''
@@ -11,7 +12,7 @@ client = discord.Client()
 global new_match
 new_match = False
 match_is_playing = False
-player = ["ab","cd"]
+player = ["",""]
 global board
 board = [0,0,0,
          0,0,0,
@@ -46,16 +47,16 @@ async def on_message(message):
             new_match = True
             return
         elif user_message =="join" and new_match == True and match_is_playing == False:
-            if player[0] == "ab":
+            if player[0] == "":
                 player[0] = username
                 await message.channel.send(f'{username} joined')
                 print(username)
-            elif player[1] == "cd":
+            elif player[1] == "":
                 player[1] = username
                 await message.channel.send(f'{username} joined')
                 print(username)
 
-            if player[0] != "ab" and player[1] != "cd":
+            if player[0] != "" and player[1] != "":
                 match_is_playing = True
                 await message.channel.send("1st player is " + player[0] + "(you place with place <Int between 0 and 8>)")
                 player_now = player[0]
@@ -77,11 +78,36 @@ async def on_message(message):
                 await look_for_win(message)
         elif user_message == "cancel":
             await cancel(message)
-        elif user_message == "config":
-            print()
+        elif user_message == "user":
+            await print_user(message) 
         elif user_message == "help":
-            await message.channel.send("-start game\t-makes new game \n-join\t\t\t\t -you join an open game\n-place\t\t\t  -places your point abt the a point")
+            await message.channel.send("-start game\t-makes new game \n-join\t\t\t\t -you join an open game\n-place\t\t\t  -places your point at the a point")
 
+
+async def print_user(message_in):
+    won = 0
+    lost = 0
+    tie = 0
+    # get file path
+    path = os.path.realpath(__file__)
+    #read data from file 
+    #search for name 
+    #save values  
+
+    await message_in.channel.send("macthes won:{} matches lost {} matches ended in a tie{}")
+    return
+
+async def add_score(messsage_in, winner):
+    if winner == 0:
+        print()
+        #add player to list or increas score
+    elif winner == 1:
+        print()
+        #add player to list or increas score
+    else:
+        print()
+        #add both players to list or increas score
+    return
 
 async def look_for_win(message_in):
     #horizontal
@@ -126,10 +152,19 @@ async def look_for_win(message_in):
     elif board[0] == 4 and board[4] == 4 and board[8] == 4:
         print()
         await win(message_in,1)
+    #look for tie
+    placed = 0
+    for x in range(len(board)):
+        if board[x] != 0:
+            placed = placed +1
+    if placed == 9:
+        add_score(message,2)
     return
+
 
 async def win(message_in,win):
     await message_in.channel.send(f"{player[win]} won")
+    await add_score(message_in,win)
     await cancel(message_in)
     return
 
@@ -138,8 +173,8 @@ async def cancel(message_in):
     global new_match
     global player_now
     await message_in.channel.send("game ended")
-    player[0] = "ab"
-    player[1] = "cd"
+    player[0] = ""
+    player[1] = ""
     for x in range(len(board)):
         board[x] = 0
     player_now = ""

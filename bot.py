@@ -1,9 +1,12 @@
 from asyncio.windows_events import NULL
+from distutils.util import change_root
 from email import message, message_from_string
 from operator import truediv
 from pickle import FALSE, TRUE
+from syslog import LOG_USER
 import discord
 import os
+import json
 from re import search
 
 TOKEN = ''
@@ -81,7 +84,7 @@ async def on_message(message):
         elif user_message == "user":
             await print_user(message, username) 
         elif user_message == "help":
-            await message.channel.send("-start game\t-makes new game \n-join\t\t\t\t -you join an open game\n-place\t\t\t  -places your point at the a point")
+            await message.channel.send("-new game\t-makes new game \n-join\t\t\t\t -you join an open game\n-place\t\t\t  -places your point at the a point")
 
 
 async def print_user(message_in, username):
@@ -100,22 +103,72 @@ async def print_user(message_in, username):
             lost = lines[x].split('#')[1]
             draw = lines[x].split('#')[1] 
     file.close()
-    await message_in.channel.send("macthes won:{won} matches lost {lost} matches ended in a draw{draw}")
+
+    #########Idea for json
+
+    f = open('main.json')
+    data = json.load(f)
+    for i in data.json()['player']:
+        if i['name'] == username:
+            won = i['won']
+            lost = i['lost']
+            draw = i['draw']
+            break
+    f.close()
+    await message_in.channel.send(f"macthes won:{won} matches lost {lost} matches ended in a draw{draw}")
     return
 
 async def add_score(messsage_in, winner):
+    global change_file
+    change_file = NULL
+    global loser 
     if winner == 0:
-        print()
-        #save file --> search for player --> add score --> wirte file 
-        #add player to list or increas score
+        loser = 1
     elif winner == 1:
-        print()
-        #save file --> search for player --> add score --> wirte file 
-        #add player to list or increas score
-    else:
-        print()
-        #save file --> search for player --> add score --> wirte file 
-        #add both players to list or increas score
+        loser = 0
+    if winner == 3:
+        global draw_1
+        draw_1 = 0
+        global draw_2
+        draw_2 = 0
+        f = open('main.json')
+        data = json.load(f)
+        for i in data.json()['player']:
+            if i['name'] == player[winner]:
+                draw_1 = i['draw']
+                break
+        for i in data.json()['player']:
+            if i['name'] == player[loser]:
+                draw_2 = i['draw']
+                break
+        f.close()
+        change_file['player'][player[winner]]['draw'] = draw_1+1
+        f = open('main.json')
+        json.dump(change_file,f)
+        change_file['player'][player[loser]]['draw'] = draw_2+1
+        json.dump(change_file,f)
+        f.close()
+        return
+
+    already_won = 0
+    already_lost = 0
+    f = open('main.json')
+    data = json.load(f)
+    for i in data.json()['player']:
+        if i['name'] == player[winner]:
+            already_won = i['won']
+            break
+    for i in data.json()['player']:
+        if i['name'] == player[loser]:
+            already_lost = i['lost']
+            break
+    f.close()
+    change_file['player'][player[winner]]['won'] = already_won+1
+    f = open('main.json')
+    json.dump(change_file,f)
+    change_file['player'][player[loser]]['lost'] = already_lost+1
+    json.dump(change_file,f)
+    f.close()
     return
 
 async def look_for_win(message_in):

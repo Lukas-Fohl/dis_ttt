@@ -1,0 +1,17 @@
+{
+    "player":
+    [
+        {
+            "name": "player1",
+            "won": 0,
+            "lost":0,
+            "draw":0
+        },
+        {
+            "name": "player2",
+            "won": 0,
+            "lost":0,
+            "draw":0
+        }    
+    ]
+}

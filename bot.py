@@ -9,7 +9,7 @@ import os
 import json
 from re import search
 
-TOKEN = ''
+TOKEN = 'ODkzNTY4OTQ4MDgyMjAwNjA4.YVdW7g.pysiQCuvQeuW7LmklaSs1-nJ0w4'
 client = discord.Client()
 global json_file_path
 json_file_path = os.path.dirname(os.path.abspath(__file__)) +"\main.json"
@@ -145,7 +145,7 @@ async def add_score(messsage_in, winner):
         change_1 = 'lost'
         change_2 = 'won'
         loser = 0
-    elif winner == 3:
+    elif winner == 2:
         change_1 = 'draw'
         change_2 = 'draw'
         winner = 0

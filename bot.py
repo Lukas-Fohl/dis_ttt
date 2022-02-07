@@ -3,7 +3,7 @@ import os
 import json
 from re import search
 
-TOKEN = 'ODkzNTY4OTQ4MDgyMjAwNjA4.YVdW7g.VKCBTjbnxnw69_SwhBZ0VN8fBiE'
+TOKEN = ''
 client = discord.Client()
 global json_file_path
 json_file_path = os.path.dirname(os.path.abspath(__file__)) +"\main.json"

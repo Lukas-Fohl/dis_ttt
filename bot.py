@@ -3,7 +3,7 @@ import os
 import json
 from re import search
 
-TOKEN = ''
+TOKEN = 'ODkzNTY4OTQ4MDgyMjAwNjA4.YVdW7g.VKCBTjbnxnw69_SwhBZ0VN8fBiE'
 client = discord.Client()
 global json_file_path
 json_file_path = os.path.dirname(os.path.abspath(__file__)) +"\main.json"
@@ -76,7 +76,36 @@ async def on_message(message):
         elif user_message == "user":
             await print_user(message, username) 
         elif user_message == "help":
-            await message.channel.send("-new game\t -makes new game \n-join\t\t\t\t -you join an open game\n-place\t\t\t  -places your point at the a point\n-user\t\t\t\t-shows scores")
+            await message.channel.send("-new game\t\t\t\t\t -makes new game \n-join\t\t\t\t\t\t\t\t -you join an open game\n-place\t\t\t\t\t\t\t  -places your point at the a point\n-user\t\t\t\t\t\t\t\t-shows your scores\n-top won/lost/draw\t-shows person with the highest score of won/lost/draw")
+        elif search("top",user_message):
+            await top(message,user_message)
+    return
+
+async def top(message_in,message_txt):
+    global json_file_path
+    global top_score
+    top_score =0
+    global top_name
+    top_name =""
+    global lookfor
+    lookfor =""
+    if search("won",message_txt):
+        lookfor = "won"
+    elif search("lost",message_txt):
+        lookfor = "lost"
+    elif search("draw",message_txt):
+        lookfor = "draw"
+    with open(json_file_path,"r") as json_file:
+        data = json.load(json_file)
+        for i in data["player"]:
+            if i[lookfor] > top_score:
+                top_score = i[lookfor]
+                top_name = i["name"]
+    if top_name != "":
+        await message_in.channel.send(f"top player for \"{lookfor}\" is {top_name} with a score of {top_score}")
+    else:
+        await message_in.channel.send(f"no player with a score that is higher than 0")
+    return
 
 def look_for_ex(username):
     global json_file_path

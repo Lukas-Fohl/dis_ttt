@@ -3,7 +3,7 @@ import os
 import json
 from re import search
 
-TOKEN = ''
+TOKEN = 'ODkzNTY4OTQ4MDgyMjAwNjA4.YVdW7g.dEb6_l0bAlgwt4XC4MQskRJ1q1c'
 client = discord.Client()
 global json_file_path
 json_file_path = os.path.dirname(os.path.abspath(__file__)) +"\main.json"
@@ -75,10 +75,21 @@ async def on_message(message):
             await cancel(message)
         elif user_message == "user":
             await print_user(message, username) 
+        elif search("top",user_message):
+            await top(message,username)
+        elif search("games played",user_message):
+            await games_played(message,username)
         elif user_message == "help":
             await message.channel.send("-new game\t\t\t\t\t -makes new game \n-join\t\t\t\t\t\t\t\t -you join an open game\n-place\t\t\t\t\t\t\t  -places your point at the a point\n-user\t\t\t\t\t\t\t\t-shows your scores\n-top won/lost/draw\t-shows person with the highest score of won/lost/draw")
-        elif search("top",user_message):
-            await top(message,user_message)
+    return
+
+async def games_played(message_in,user):
+    with open(json_file_path,"r") as json_file:
+        data = json.load(json_file)
+        for i in data["player"]:
+            if i['name'] == user:
+                played_ = i['games_played']
+                await message_in.channel.send(f"you've played {played_} games")
     return
 
 async def top(message_in,message_txt):
@@ -122,7 +133,8 @@ def new_user(username):
             "name": username,
             "won": 0,
             "lost":0,
-            "draw":0
+            "draw":0,
+            "games_played":0
         }
     with open(json_file_path,"r+") as json_file:
         file_data = json.load(json_file)

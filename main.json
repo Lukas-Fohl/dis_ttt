@@ -4,13 +4,15 @@
             "name": "player1",
             "won": 0,
             "lost": 0,
-            "draw": 0
+            "draw": 0,
+            "games_played":0
         },
         {
             "name": "player2",
             "won": 0,
             "lost": 0,
-            "draw": 0
+            "draw": 0,
+            "games_played":0
         }
     ]
 }

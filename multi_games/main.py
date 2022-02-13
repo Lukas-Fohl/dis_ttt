@@ -32,9 +32,6 @@ async def on_message(message):
         return
     if channel == 'ttt':
         if user_message == "new game":
-            #p = Process(target=f, args=('bob',))
-            #p.start()
-            #p.join()
             game.start_game = find_free_id()
             return
         elif user_message == "clear all games":

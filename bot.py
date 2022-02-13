@@ -187,6 +187,7 @@ async def add_score(messsage_in, winner):
         for i in data["player"]:
             if i['name'] == player[winner]:
                 i[change_1] = i[change_1]+1
+                i["games_played"] = i["games_played"]+1
                 json_file.seek(0)
                 json.dump(data, json_file, indent = 4)
                 break 
@@ -195,6 +196,7 @@ async def add_score(messsage_in, winner):
         for i in data["player"]:
             if i['name'] == player[loser]:
                 i[change_2] = i[change_2]+1
+                i["games_played"] = i["games_played"]+1
                 json_file.seek(0)
                 json.dump(data, json_file, indent = 4)
                 break           

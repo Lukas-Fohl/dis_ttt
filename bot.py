@@ -1,7 +1,13 @@
+from email import message
+from shutil import move
+from unittest import async_case
 import discord
 import os
 import json
+from random import randint
 from re import search
+
+from numpy import true_divide
 
 TOKEN = ''
 client = discord.Client()
@@ -11,6 +17,8 @@ json_file_path = os.path.dirname(os.path.abspath(__file__)) +"\main.json"
 global new_match
 new_match = False
 match_is_playing = False
+global bot_is_playing
+bot_is_playing = False
 player = ["",""]
 global board
 board = [0,0,0,
@@ -41,20 +49,21 @@ async def on_message(message):
         global new_match
         global player_now
         if user_message == "new game" and new_match == False and match_is_playing == False:
-            await message.channel.send(f'new match ist starting (join with join)')
+            await message.channel.send(f'new match ist starting (join with \'join\')')
             new_match = True
             return
         elif user_message =="join" and new_match == True and match_is_playing == False:
             if player[0] == "":
                 player[0] = username
                 await message.channel.send(f'{username} joined')
+                await message.channel.send(f'we just need one more to join with \'join\'')
             elif player[1] == "":
                 player[1] = username
                 await message.channel.send(f'{username} joined')
 
             if player[0] != "" and player[1] != "":
                 match_is_playing = True
-                await message.channel.send("1st player is " + player[0] + "(you place with place <Int between 0 and 8>)")
+                await message.channel.send("1st player is " + player[0] + "(you place with \'place\' <Int between 0 and 8>)")
                 player_now = player[0]
                 await print_board(message)
             return
@@ -64,7 +73,9 @@ async def on_message(message):
                     board[int(user_message[6])] = 8
                 player_now = player[1]
                 await print_board(message)
-                await look_for_win(message) 
+                await look_for_win(message)
+                if bot_is_playing == True:
+                    await bot_turn(message)
             elif username == player[1] and player_now == player[1]:
                 if board[int(user_message[6])] == 0:
                     board[int(user_message[6])] = 4
@@ -76,11 +87,49 @@ async def on_message(message):
         elif user_message == "user":
             await print_user(message, username) 
         elif search("top",user_message):
-            await top(message,username)
+            await top(message,user_message)
         elif search("games played",user_message):
             await games_played(message,username)
+        elif user_message == "bot?":
+            await bot_play(username, message)
         elif user_message == "help":
-            await message.channel.send("-new game\t\t\t\t\t -makes new game \n-join\t\t\t\t\t\t\t\t -you join an open game\n-place\t\t\t\t\t\t\t  -places your point at the a point\n-user\t\t\t\t\t\t\t\t-shows your scores\n-top won/lost/draw\t-shows person with the highest score of won/lost/draw")
+            await message.channel.send("-'new game'\t\t\t\t\t -makes new game \n-'join'\t\t\t\t\t\t\t\t -you join an open game\n-'place'\t\t\t\t\t\t\t  -places your point at the a point\n-'user'\t\t\t\t\t\t\t\t-shows your scores\n-'top won/lost/draw'\t-shows person with the highest score of won/lost/draw")
+    return
+
+async def bot_turn(message):
+    global bot_is_playing
+    global player_now
+    if bot_is_playing == True:
+        bot_move()
+        player_now = player[0]
+        await message.channel.send('-')
+        await print_board(message)
+        await look_for_win(message)
+    return
+
+def bot_move():
+    #high level shit happens here
+    i = randint(-1, 8)
+    if board[i] == 0:
+        board[i] = 4
+    else:
+        bot_move()
+    return
+
+async def bot_play(username, message):
+    global match_is_playing
+    global new_match
+    global player_now
+    global bot_is_playing
+    if match_is_playing == False and new_match == False:
+        match_is_playing = True
+        new_match = True
+        player[0] = username
+        player[1] = "bot"
+        await message.channel.send("1st player is " + player[0] + "(you place with place <Int between 0 and 8>)")
+        player_now = player[0]
+        bot_is_playing = True
+        await print_board(message)
     return
 
 async def games_played(message_in,user):
@@ -166,9 +215,9 @@ async def add_score(messsage_in, winner):
     look_for_ex(player[winner])
     global loser 
     global change_1
-    change_1 = ''
     global change_2
     change_2 = ''
+    change_1 = ''
     if winner == 0:
         change_1 = 'won'
         change_2 = 'lost'
@@ -182,6 +231,7 @@ async def add_score(messsage_in, winner):
         change_2 = 'draw'
         winner = 0
         loser = 1
+    look_for_ex(player[loser])
     with open(json_file_path,"r+") as json_file:
         data = json.load(json_file)
         for i in data["player"]:
@@ -224,7 +274,7 @@ async def look_for_win(message_in):
             if board[x+y*3] == 8:
                 have_to_win_p1 = have_to_win_p1 + 1
             elif board[x+y*3] == 4:
-                have_to_win_p1 = have_to_win_p1 + 1
+                have_to_win_p2 = have_to_win_p2 + 1
             if have_to_win_p1 == 3:
                 await win(message_in,0)
             elif have_to_win_p2 == 3:
@@ -247,7 +297,8 @@ async def look_for_win(message_in):
         if board[x] != 0:
             placed = placed +1
     if placed == 9:
-        add_score(message_in,2)
+        await add_score(message_in,2)
+        await cancel(message_in)
     return
 
 async def win(message_in,win):
@@ -260,6 +311,7 @@ async def cancel(message_in):
     global match_is_playing
     global new_match
     global player_now
+    global bot_is_playing
     await message_in.channel.send("game ended")
     player[0] = ""
     player[1] = ""
@@ -268,6 +320,7 @@ async def cancel(message_in):
     player_now = ""
     new_match = False
     match_is_playing = False
+    bot_is_playing = False
     return
 
 async def print_board(new_message):    

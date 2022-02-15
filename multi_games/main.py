@@ -7,7 +7,7 @@ from re import search
 import single_game as game
 from multiprocessing import Process
 
-TOKEN = ''
+TOKEN = 'ODkzNTY4OTQ4MDgyMjAwNjA4.YVdW7g.U0HvaarblpfB51sSU_7VPs1UMBM'
 client = discord.Client()
 global json_file_path
 json_file_path_main = os.path.dirname(os.path.abspath(__file__)) +"\main.json"

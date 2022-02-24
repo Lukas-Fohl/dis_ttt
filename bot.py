@@ -6,8 +6,7 @@ import os
 import json
 from random import randint
 from re import search
-
-from numpy import true_divide
+import real_player as player
 
 TOKEN = ''
 client = discord.Client()
@@ -108,12 +107,7 @@ async def bot_turn(message):
     return
 
 def bot_move():
-    #high level shit happens here
-    i = randint(-1, 8)
-    if board[i] == 0:
-        board[i] = 4
-    else:
-        bot_move()
+    board = player.find_move(board)
     return
 
 async def bot_play(username, message):
